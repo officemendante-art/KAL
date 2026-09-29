@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Outer mint-wash body -->
+    <item>
+        <shape android:shape="oval">
+            <gradient
+                android:angle="315"
+                android:startColor="#F3FDF8"
+                android:centerColor="#EBF9F2"
+                android:endColor="#E4FAF0"
+                android:type="linear" />
+            <stroke
+                android:width="1dp"
+                android:color="#304B7A64" />
+        </shape>
+    </item>
+    <!-- Inner coin rim ring -->
+    <item
+        android:bottom="3.5dp"
+        android:left="3.5dp"
+        android:right="3.5dp"
+        android:top="3.5dp">
+        <shape android:shape="oval">
+            <stroke
+                android:width="1dp"
+                android:color="#224B7A64" />
+        </shape>
+    </item>
+</layer-list>

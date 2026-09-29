@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/background"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?attr/colorSurface"
+    tools:context=".AboutActivity">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.google.android.material.appbar.CollapsingToolbarLayout
+            style="?attr/collapsingToolbarLayoutLargeStyle"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/collapsingToolbarLayoutLargeSize"
+            app:contentScrim="?attr/colorSurface"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed"
+            app:titleCollapseMode="scale">
+
+            <com.google.android.material.appbar.MaterialToolbar
+                android:id="@+id/topAppBar"
+                style="@style/appBar_settings"
+                app:title="@string/title_about" />
+
+        </com.google.android.material.appbar.CollapsingToolbarLayout>
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scrollbars="vertical"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingBottom="48dp">
+
+            <TextView
+                android:id="@+id/infoSelectionText"
+                style="@style/sectionText"
+                android:layout_marginTop="24dp"
+                android:text="@string/info_selection_text" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/developerLayout"
+                style="@style/optionLayout"
+                android:layout_marginTop="8dp">
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/developerImage"
+                    style="@style/optionImage"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@drawable/baseline_person" />
+
+                <TextView
+                    android:id="@+id/developerTitleText"
+                    style="@style/optionTitleText"
+                    android:text="@string/developer_title"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/developerImage"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/developerText"
+                    style="@style/optionDescriptionText"
+                    android:text="@string/developer_summary"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/developerImage"
+                    app:layout_constraintTop_toBottomOf="@id/developerTitleText" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/licensesLayout"
+                style="@style/optionLayout">
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/licensesImage"
+                    style="@style/optionImage"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@drawable/baseline_license" />
+
+                <TextView
+                    android:id="@+id/licensesTitleText"
+                    style="@style/optionTitleText"
+                    android:text="@string/title_licenses"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/licensesImage"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/licensesText"
+                    style="@style/optionDescriptionText"
+                    android:text="@string/description_licenses"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/licensesImage"
+                    app:layout_constraintTop_toBottomOf="@id/licensesTitleText" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/privacyPolicyLayout"
+                style="@style/optionLayout">
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/privacyPolicyImage"
+                    style="@style/optionImage"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@drawable/baseline_privacy" />
+
+                <TextView
+                    android:id="@+id/privacyPolicyTitleText"
+                    style="@style/optionTitleText"
+                    android:text="@string/privacy_policy_title"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/privacyPolicyImage"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/privacyPolicyText"
+                    style="@style/optionDescriptionText"
+                    android:text="@string/privacy_policy_desc"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/privacyPolicyImage"
+                    app:layout_constraintTop_toBottomOf="@id/privacyPolicyTitleText" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/versionLayout"
+                style="@style/optionLayout"
+                android:clickable="false"
+                android:focusable="false"
+                android:background="@null"
+                android:foreground="@null">
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/versionImage"
+                    style="@style/optionImage"
+                    android:padding="3dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@drawable/baseline_info" />
+
+                <TextView
+                    android:id="@+id/versionTitleText"
+                    style="@style/optionTitleText"
+                    android:text="@string/version_title"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/versionImage"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/versionText"
+                    style="@style/optionDescriptionText"
+                    android:text="@string/description_version_app"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/versionImage"
+                    app:layout_constraintTop_toBottomOf="@id/versionTitleText" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

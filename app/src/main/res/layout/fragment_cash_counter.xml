@@ -1,0 +1,1386 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.kal.cashcounter.SwipeDismissLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/cashCounterRoot"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:clickable="true"
+    android:focusable="true">
+
+    <!-- Scrim view for dimming background during slide transition -->
+    <View
+        android:id="@+id/scrimOverlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#000000"
+        android:alpha="0"
+        android:importantForAccessibility="no" />
+
+    <!-- Left edge drop shadow for iOS depth layer effect -->
+    <View
+        android:id="@+id/leftEdgeShadow"
+        android:layout_width="16dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:background="@drawable/shadow_left_edge"
+        android:importantForAccessibility="no" />
+
+    <!-- Main Sliding Content Container -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/contentContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/cash_surface"
+        android:clickable="true"
+        android:focusable="true">
+
+        <!-- Top Bar -->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/topBar"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:minHeight="56dp"
+            android:paddingStart="6dp"
+            android:paddingEnd="10dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <ImageView
+                android:id="@+id/btnBack"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
+                android:padding="10dp"
+                android:src="@drawable/baseline_arrow_back"
+                app:tint="@color/cash_obsidian"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/app_name"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent" />
+
+            <TextView
+                android:id="@+id/tvTitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="@string/cash_counter_title"
+                android:textColor="@color/cash_obsidian"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:layout_marginStart="4dp"
+                app:layout_constraintStart_toEndOf="@id/btnBack"
+                app:layout_constraintEnd_toStartOf="@id/btnCurrency"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent" />
+
+            <!-- Currency Pill: INR ⌄ -->
+            <LinearLayout
+                android:id="@+id/btnCurrency"
+                android:layout_width="wrap_content"
+                android:layout_height="36dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:background="@drawable/bg_currency_pill"
+                android:paddingStart="13dp"
+                android:paddingEnd="9dp"
+                android:layout_marginEnd="8dp"
+                app:layout_constraintEnd_toStartOf="@id/btnReset"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent">
+
+                <TextView
+                    android:id="@+id/tvCurrencyLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="INR"
+                    android:textColor="@color/cash_obsidian"
+                    android:textSize="13sp"
+                    android:textStyle="bold"
+                    android:letterSpacing="0.02" />
+
+                <ImageView
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:layout_marginStart="6dp"
+                    android:src="@drawable/ic_chevron_down"
+                    android:importantForAccessibility="no" />
+
+            </LinearLayout>
+
+            <!-- Reset All Counts Icon Button (↻) -->
+            <ImageView
+                android:id="@+id/btnReset"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
+                android:padding="10dp"
+                android:src="@drawable/ic_reset"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/clear_history_title"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <!-- ==================== HERO SECTION (TOTAL AT TOP) ==================== -->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/heroSection"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:paddingHorizontal="22dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="16dp"
+            app:layout_constraintTop_toBottomOf="@id/topBar"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <!-- Count Pill (e.g. • 0 notes / • 94 notes + 45 coins) -->
+            <TextView
+                android:id="@+id/tvCountPill"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_notes_pill"
+                android:drawableStart="@drawable/ic_mint_dot"
+                android:drawablePadding="8dp"
+                android:paddingStart="10dp"
+                android:paddingEnd="12dp"
+                android:paddingTop="6dp"
+                android:paddingBottom="6dp"
+                android:text="0 notes"
+                android:textColor="@color/cash_laser_mint"
+                android:textSize="12.5sp"
+                android:textStyle="bold"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <!-- Amount Box -->
+            <LinearLayout
+                android:id="@+id/layoutAmount"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="bottom"
+                android:layout_marginTop="8dp"
+                app:layout_constraintTop_toBottomOf="@id/tvCountPill"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
+
+                <TextView
+                    android:id="@+id/tvCurrencySymbol"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="₹"
+                    android:textColor="@color/cash_currency_sym"
+                    android:textSize="28sp"
+                    android:layout_marginEnd="6dp"
+                    android:layout_marginBottom="4dp" />
+
+                <TextView
+                    android:id="@+id/tvGrandTotalAmount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="0"
+                    android:textColor="@color/cash_obsidian"
+                    android:textSize="56sp"
+                    android:fontFamily="@font/jetbrains_mono"
+                    android:textStyle="bold"
+                    android:includeFontPadding="false" />
+
+            </LinearLayout>
+
+            <!-- Words Representation -->
+            <TextView
+                android:id="@+id/tvAmountInWords"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:text="Add notes or coins to see the total."
+                android:textColor="@color/cash_text_slate"
+                android:textSize="13sp"
+                android:lineSpacingMultiplier="1.3"
+                android:maxLines="2"
+                android:ellipsize="end"
+                app:layout_constraintTop_toBottomOf="@id/layoutAmount"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+            <!-- Spectrum Breakdown Bar -->
+            <LinearLayout
+                android:id="@+id/layoutSpectrum"
+                android:layout_width="0dp"
+                android:layout_height="8dp"
+                android:layout_marginTop="12dp"
+                android:orientation="horizontal"
+                android:background="@drawable/bg_spectrum_container"
+                android:padding="0dp"
+                app:layout_constraintTop_toBottomOf="@id/tvAmountInWords"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
+
+                <View android:id="@+id/spectrum500" android:layout_width="0dp" android:layout_height="match_parent" android:background="@color/cash_note_500" android:visibility="gone" />
+                <View android:id="@+id/spectrum200" android:layout_width="0dp" android:layout_height="match_parent" android:background="@color/cash_note_200" android:visibility="gone" />
+                <View android:id="@+id/spectrum100" android:layout_width="0dp" android:layout_height="match_parent" android:background="@color/cash_note_100" android:visibility="gone" />
+                <View android:id="@+id/spectrum50" android:layout_width="0dp" android:layout_height="match_parent" android:background="@color/cash_note_50" android:visibility="gone" />
+                <View android:id="@+id/spectrum20" android:layout_width="0dp" android:layout_height="match_parent" android:background="@color/cash_note_20" android:visibility="gone" />
+                <View android:id="@+id/spectrum10" android:layout_width="0dp" android:layout_height="match_parent" android:background="@color/cash_note_10" android:visibility="gone" />
+                <View android:id="@+id/spectrum5" android:layout_width="0dp" android:layout_height="match_parent" android:background="@color/cash_coin_5" android:visibility="gone" />
+                <View android:id="@+id/spectrum2" android:layout_width="0dp" android:layout_height="match_parent" android:background="@color/cash_coin_2" android:visibility="gone" />
+                <View android:id="@+id/spectrum1" android:layout_width="0dp" android:layout_height="match_parent" android:background="@color/cash_coin_1" android:visibility="gone" />
+
+            </LinearLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <!-- ==================== SCROLLABLE ROWS SECTION ==================== -->
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/scrollView"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:overScrollMode="never"
+            android:fillViewport="true"
+            app:layout_constraintTop_toBottomOf="@id/heroSection"
+            app:layout_constraintBottom_toTopOf="@id/keypadLayout"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <LinearLayout
+                android:id="@+id/llContent"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingHorizontal="12dp"
+                android:paddingTop="4dp"
+                android:paddingBottom="16dp">
+
+                <!-- Single Unified Card Containing All 9 Denominations -->
+                <LinearLayout
+                    android:id="@+id/cardAllDenominations"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:background="@drawable/bg_unified_rows_card"
+                    android:padding="4dp">
+
+                    <!-- Row: 500 -->
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/row500"
+                        android:layout_width="match_parent"
+                        android:layout_height="52dp"
+                        android:paddingHorizontal="12dp">
+
+                        <TextView
+                            android:id="@+id/chip500"
+                            android:layout_width="56dp"
+                            android:layout_height="30dp"
+                            android:gravity="center"
+                            android:background="@drawable/bg_note_500"
+                            android:text="₹500"
+                            android:textColor="@color/cash_note_500_text"
+                            android:textSize="13sp"
+                            android:textStyle="bold"
+                            android:fontFamily="@font/jetbrains_mono"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintBottom_toBottomOf="parent" />
+
+                        <LinearLayout
+                            android:id="@+id/ctrlGroup500"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            android:layout_marginStart="12dp"
+                            app:layout_constraintStart_toEndOf="@id/chip500"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintBottom_toBottomOf="parent">
+
+                            <ImageView
+                                android:id="@+id/btnMinus500"
+                                android:layout_width="36dp"
+                                android:layout_height="36dp"
+                                android:padding="9dp"
+                                android:background="@drawable/bg_round_step_btn"
+                                android:src="@drawable/baseline_remove"
+                                app:tint="@color/cash_obsidian"
+                                android:contentDescription="@string/app_name" />
+
+                            <TextView
+                                android:id="@+id/pillCount500"
+                                android:layout_width="wrap_content"
+                                android:minWidth="52dp"
+                                android:layout_height="38dp"
+                                android:layout_marginHorizontal="4dp"
+                                android:gravity="center"
+                                android:paddingHorizontal="4dp"
+                                android:text="0"
+                                android:textColor="@color/cash_text_muted"
+                                android:textSize="19sp"
+                                android:fontFamily="@font/jetbrains_mono" />
+
+                            <ImageView
+                                android:id="@+id/btnPlus500"
+                                android:layout_width="36dp"
+                                android:layout_height="36dp"
+                                android:padding="9dp"
+                                android:background="@drawable/bg_round_step_btn"
+                                android:src="@drawable/baseline_add"
+                                app:tint="@color/cash_obsidian"
+                                android:contentDescription="@string/app_name" />
+
+                        </LinearLayout>
+
+                        <TextView
+                            android:id="@+id/tvSubtotal500"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:text="₹0"
+                            android:textColor="@color/cash_text_muted"
+                            android:textSize="14.5sp"
+                            android:textStyle="bold"
+                            android:fontFamily="@font/jetbrains_mono"
+                            android:gravity="end"
+                            android:layout_marginStart="8dp"
+                            app:layout_constraintStart_toEndOf="@id/ctrlGroup500"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintBottom_toBottomOf="parent" />
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                    <View android:id="@+id/div500" android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/cash_line" android:layout_marginHorizontal="12dp" />
+
+                    <!-- Row: 200 -->
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/row200"
+                        android:layout_width="match_parent"
+                        android:layout_height="52dp"
+                        android:paddingHorizontal="12dp">
+
+                        <TextView
+                            android:id="@+id/chip200"
+                            android:layout_width="56dp"
+                            android:layout_height="30dp"
+                            android:gravity="center"
+                            android:background="@drawable/bg_note_200"
+                            android:text="₹200"
+                            android:textColor="@color/cash_note_200_text"
+                            android:textSize="13sp"
+                            android:textStyle="bold"
+                            android:fontFamily="@font/jetbrains_mono"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintBottom_toBottomOf="parent" />
+
+                        <LinearLayout
+                            android:id="@+id/ctrlGroup200"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            android:layout_marginStart="12dp"
+                            app:layout_constraintStart_toEndOf="@id/chip200"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintBottom_toBottomOf="parent">
+
+                            <ImageView
+                                android:id="@+id/btnMinus200"
+                                android:layout_width="36dp"
+                                android:layout_height="36dp"
+                                android:padding="9dp"
+                                android:background="@drawable/bg_round_step_btn"
+                                android:src="@drawable/baseline_remove"
+                                app:tint="@color/cash_obsidian"
+                                android:contentDescription="@string/app_name" />
+
+                            <TextView
+                                android:id="@+id/pillCount200"
+                                android:layout_width="wrap_content"
+                                android:minWidth="52dp"
+                                android:layout_height="38dp"
+                                android:layout_marginHorizontal="4dp"
+                                android:gravity="center"
+                                android:paddingHorizontal="4dp"
+                                android:text="0"
+                                android:textColor="@color/cash_text_muted"
+                                android:textSize="19sp"
+                                android:fontFamily="@font/jetbrains_mono" />
+
+                            <ImageView
+                                android:id="@+id/btnPlus200"
+                                android:layout_width="36dp"
+                                android:layout_height="36dp"
+                                android:padding="9dp"
+                                android:background="@drawable/bg_round_step_btn"
+                                android:src="@drawable/baseline_add"
+                                app:tint="@color/cash_obsidian"
+                                android:contentDescription="@string/app_name" />
+
+                        </LinearLayout>
+
+                        <TextView
+                            android:id="@+id/tvSubtotal200"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:text="₹0"
+                            android:textColor="@color/cash_text_muted"
+                            android:textSize="14.5sp"
+                            android:textStyle="bold"
+                            android:fontFamily="@font/jetbrains_mono"
+                            android:gravity="end"
+                            android:layout_marginStart="8dp"
+                            app:layout_constraintStart_toEndOf="@id/ctrlGroup200"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintBottom_toBottomOf="parent" />
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                    <View android:id="@+id/div200" android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/cash_line" android:layout_marginHorizontal="12dp" />
+
+                    <!-- Row: 100 -->
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/row100"
+                        android:layout_width="match_parent"
+                        android:layout_height="52dp"
+                        android:paddingHorizontal="12dp">
+
+                        <TextView
+                            android:id="@+id/chip100"
+                            android:layout_width="56dp"
+                            android:layout_height="30dp"
+                            android:gravity="center"
+                            android:background="@drawable/bg_note_100"
+                            android:text="₹100"
+                            android:textColor="@color/cash_note_100_text"
+                            android:textSize="13sp"
+                            android:textStyle="bold"
+                            android:fontFamily="@font/jetbrains_mono"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintBottom_toBottomOf="parent" />
+
+                        <LinearLayout
+                            android:id="@+id/ctrlGroup100"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            android:layout_marginStart="12dp"
+                            app:layout_constraintStart_toEndOf="@id/chip100"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintBottom_toBottomOf="parent">
+
+                            <ImageView
+                                android:id="@+id/btnMinus100"
+                                android:layout_width="36dp"
+                                android:layout_height="36dp"
+                                android:padding="9dp"
+                                android:background="@drawable/bg_round_step_btn"
+                                android:src="@drawable/baseline_remove"
+                                app:tint="@color/cash_obsidian"
+                                android:contentDescription="@string/app_name" />
+
+                            <TextView
+                                android:id="@+id/pillCount100"
+                                android:layout_width="wrap_content"
+                                android:minWidth="52dp"
+                                android:layout_height="38dp"
+                                android:layout_marginHorizontal="4dp"
+                                android:gravity="center"
+                                android:paddingHorizontal="4dp"
+                                android:text="0"
+                                android:textColor="@color/cash_text_muted"
+                                android:textSize="19sp"
+                                android:fontFamily="@font/jetbrains_mono" />
+
+                            <ImageView
+                                android:id="@+id/btnPlus100"
+                                android:layout_width="36dp"
+                                android:layout_height="36dp"
+                                android:padding="9dp"
+                                android:background="@drawable/bg_round_step_btn"
+                                android:src="@drawable/baseline_add"
+                                app:tint="@color/cash_obsidian"
+                                android:contentDescription="@string/app_name" />
+
+                        </LinearLayout>
+
+                        <TextView
+                            android:id="@+id/tvSubtotal100"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:text="₹0"
+                            android:textColor="@color/cash_text_muted"
+                            android:textSize="14.5sp"
+                            android:textStyle="bold"
+                            android:fontFamily="@font/jetbrains_mono"
+                            android:gravity="end"
+                            android:layout_marginStart="8dp"
+                            app:layout_constraintStart_toEndOf="@id/ctrlGroup100"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintBottom_toBottomOf="parent" />
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                    <View android:id="@+id/div100" android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/cash_line" android:layout_marginHorizontal="12dp" />
+
+                    <!-- Row: 50 -->
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/row50"
+                        android:layout_width="match_parent"
+                        android:layout_height="52dp"
+                        android:paddingHorizontal="12dp">
+
+                        <TextView
+                            android:id="@+id/chip50"
+                            android:layout_width="56dp"
+                            android:layout_height="30dp"
+                            android:gravity="center"
+                            android:background="@drawable/bg_note_50"
+                            android:text="₹50"
+                            android:textColor="@color/cash_note_50_text"
+                            android:textSize="13sp"
+                            android:textStyle="bold"
+                            android:fontFamily="@font/jetbrains_mono"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintBottom_toBottomOf="parent" />
+
+                        <LinearLayout
+                            android:id="@+id/ctrlGroup50"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            android:layout_marginStart="12dp"
+                            app:layout_constraintStart_toEndOf="@id/chip50"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintBottom_toBottomOf="parent">
+
+                            <ImageView
+                                android:id="@+id/btnMinus50"
+                                android:layout_width="36dp"
+                                android:layout_height="36dp"
+                                android:padding="9dp"
+                                android:background="@drawable/bg_round_step_btn"
+                                android:src="@drawable/baseline_remove"
+                                app:tint="@color/cash_obsidian"
+                                android:contentDescription="@string/app_name" />
+
+                            <TextView
+                                android:id="@+id/pillCount50"
+                                android:layout_width="wrap_content"
+                                android:minWidth="52dp"
+                                android:layout_height="38dp"
+                                android:layout_marginHorizontal="4dp"
+                                android:gravity="center"
+                                android:paddingHorizontal="4dp"
+                                android:text="0"
+                                android:textColor="@color/cash_text_muted"
+                                android:textSize="19sp"
+                                android:fontFamily="@font/jetbrains_mono" />
+
+                            <ImageView
+                                android:id="@+id/btnPlus50"
+                                android:layout_width="36dp"
+                                android:layout_height="36dp"
+                                android:padding="9dp"
+                                android:background="@drawable/bg_round_step_btn"
+                                android:src="@drawable/baseline_add"
+                                app:tint="@color/cash_obsidian"
+                                android:contentDescription="@string/app_name" />
+
+                        </LinearLayout>
+
+                        <TextView
+                            android:id="@+id/tvSubtotal50"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:text="₹0"
+                            android:textColor="@color/cash_text_muted"
+                            android:textSize="14.5sp"
+                            android:textStyle="bold"
+                            android:fontFamily="@font/jetbrains_mono"
+                            android:gravity="end"
+                            android:layout_marginStart="8dp"
+                            app:layout_constraintStart_toEndOf="@id/ctrlGroup50"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintBottom_toBottomOf="parent" />
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                    <View android:id="@+id/div50" android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/cash_line" android:layout_marginHorizontal="12dp" />
+
+                    <!-- Row: 20 -->
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/row20"
+                        android:layout_width="match_parent"
+                        android:layout_height="52dp"
+                        android:paddingHorizontal="12dp">
+
+                        <TextView
+                            android:id="@+id/chip20"
+                            android:layout_width="56dp"
+                            android:layout_height="30dp"
+                            android:gravity="center"
+                            android:background="@drawable/bg_note_20"
+                            android:text="₹20"
+                            android:textColor="@color/cash_note_20_text"
+                            android:textSize="13sp"
+                            android:textStyle="bold"
+                            android:fontFamily="@font/jetbrains_mono"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintBottom_toBottomOf="parent" />
+
+                        <LinearLayout
+                            android:id="@+id/ctrlGroup20"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            android:layout_marginStart="12dp"
+                            app:layout_constraintStart_toEndOf="@id/chip20"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintBottom_toBottomOf="parent">
+
+                            <ImageView
+                                android:id="@+id/btnMinus20"
+                                android:layout_width="36dp"
+                                android:layout_height="36dp"
+                                android:padding="9dp"
+                                android:background="@drawable/bg_round_step_btn"
+                                android:src="@drawable/baseline_remove"
+                                app:tint="@color/cash_obsidian"
+                                android:contentDescription="@string/app_name" />
+
+                            <TextView
+                                android:id="@+id/pillCount20"
+                                android:layout_width="wrap_content"
+                                android:minWidth="52dp"
+                                android:layout_height="38dp"
+                                android:layout_marginHorizontal="4dp"
+                                android:gravity="center"
+                                android:paddingHorizontal="4dp"
+                                android:text="0"
+                                android:textColor="@color/cash_text_muted"
+                                android:textSize="19sp"
+                                android:fontFamily="@font/jetbrains_mono" />
+
+                            <ImageView
+                                android:id="@+id/btnPlus20"
+                                android:layout_width="36dp"
+                                android:layout_height="36dp"
+                                android:padding="9dp"
+                                android:background="@drawable/bg_round_step_btn"
+                                android:src="@drawable/baseline_add"
+                                app:tint="@color/cash_obsidian"
+                                android:contentDescription="@string/app_name" />
+
+                        </LinearLayout>
+
+                        <TextView
+                            android:id="@+id/tvSubtotal20"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:text="₹0"
+                            android:textColor="@color/cash_text_muted"
+                            android:textSize="14.5sp"
+                            android:textStyle="bold"
+                            android:fontFamily="@font/jetbrains_mono"
+                            android:gravity="end"
+                            android:layout_marginStart="8dp"
+                            app:layout_constraintStart_toEndOf="@id/ctrlGroup20"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintBottom_toBottomOf="parent" />
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                    <View android:id="@+id/div20" android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/cash_line" android:layout_marginHorizontal="12dp" />
+
+                    <!-- Row: 10 -->
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/row10"
+                        android:layout_width="match_parent"
+                        android:layout_height="52dp"
+                        android:paddingHorizontal="12dp">
+
+                        <TextView
+                            android:id="@+id/chip10"
+                            android:layout_width="56dp"
+                            android:layout_height="30dp"
+                            android:gravity="center"
+                            android:background="@drawable/bg_note_10"
+                            android:text="₹10"
+                            android:textColor="@color/cash_note_10_text"
+                            android:textSize="13sp"
+                            android:textStyle="bold"
+                            android:fontFamily="@font/jetbrains_mono"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintBottom_toBottomOf="parent" />
+
+                        <LinearLayout
+                            android:id="@+id/ctrlGroup10"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            android:layout_marginStart="12dp"
+                            app:layout_constraintStart_toEndOf="@id/chip10"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintBottom_toBottomOf="parent">
+
+                            <ImageView
+                                android:id="@+id/btnMinus10"
+                                android:layout_width="36dp"
+                                android:layout_height="36dp"
+                                android:padding="9dp"
+                                android:background="@drawable/bg_round_step_btn"
+                                android:src="@drawable/baseline_remove"
+                                app:tint="@color/cash_obsidian"
+                                android:contentDescription="@string/app_name" />
+
+                            <TextView
+                                android:id="@+id/pillCount10"
+                                android:layout_width="wrap_content"
+                                android:minWidth="52dp"
+                                android:layout_height="38dp"
+                                android:layout_marginHorizontal="4dp"
+                                android:gravity="center"
+                                android:paddingHorizontal="4dp"
+                                android:text="0"
+                                android:textColor="@color/cash_text_muted"
+                                android:textSize="19sp"
+                                android:fontFamily="@font/jetbrains_mono" />
+
+                            <ImageView
+                                android:id="@+id/btnPlus10"
+                                android:layout_width="36dp"
+                                android:layout_height="36dp"
+                                android:padding="9dp"
+                                android:background="@drawable/bg_round_step_btn"
+                                android:src="@drawable/baseline_add"
+                                app:tint="@color/cash_obsidian"
+                                android:contentDescription="@string/app_name" />
+
+                        </LinearLayout>
+
+                        <TextView
+                            android:id="@+id/tvSubtotal10"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:text="₹0"
+                            android:textColor="@color/cash_text_muted"
+                            android:textSize="14.5sp"
+                            android:textStyle="bold"
+                            android:fontFamily="@font/jetbrains_mono"
+                            android:gravity="end"
+                            android:layout_marginStart="8dp"
+                            app:layout_constraintStart_toEndOf="@id/ctrlGroup10"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintBottom_toBottomOf="parent" />
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                    <View android:id="@+id/div10" android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/cash_line" android:layout_marginHorizontal="12dp" />
+
+                    <!-- Row: 5 (Coin) -->
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/row5"
+                        android:layout_width="match_parent"
+                        android:layout_height="52dp"
+                        android:paddingHorizontal="12dp">
+
+                        <FrameLayout
+                            android:id="@+id/chipFrame5"
+                            android:layout_width="56dp"
+                            android:layout_height="34dp"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintBottom_toBottomOf="parent">
+
+                            <TextView
+                                android:id="@+id/chip5"
+                                android:layout_width="34dp"
+                                android:layout_height="34dp"
+                                android:layout_gravity="center"
+                                android:gravity="center"
+                                android:background="@drawable/bg_coin_5"
+                                android:text="₹5"
+                                android:textColor="@color/cash_coin_5_text"
+                                android:textSize="12.5sp"
+                                android:textStyle="bold" />
+
+                        </FrameLayout>
+
+                        <LinearLayout
+                            android:id="@+id/ctrlGroup5"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            android:layout_marginStart="12dp"
+                            app:layout_constraintStart_toEndOf="@id/chipFrame5"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintBottom_toBottomOf="parent">
+
+                            <ImageView
+                                android:id="@+id/btnMinus5"
+                                android:layout_width="36dp"
+                                android:layout_height="36dp"
+                                android:padding="9dp"
+                                android:background="@drawable/bg_round_step_btn"
+                                android:src="@drawable/baseline_remove"
+                                app:tint="@color/cash_obsidian"
+                                android:contentDescription="@string/app_name" />
+
+                            <TextView
+                                android:id="@+id/pillCount5"
+                                android:layout_width="wrap_content"
+                                android:minWidth="52dp"
+                                android:layout_height="38dp"
+                                android:layout_marginHorizontal="4dp"
+                                android:gravity="center"
+                                android:paddingHorizontal="4dp"
+                                android:text="0"
+                                android:textColor="@color/cash_text_muted"
+                                android:textSize="19sp"
+                                android:fontFamily="@font/jetbrains_mono" />
+
+                            <ImageView
+                                android:id="@+id/btnPlus5"
+                                android:layout_width="36dp"
+                                android:layout_height="36dp"
+                                android:padding="9dp"
+                                android:background="@drawable/bg_round_step_btn"
+                                android:src="@drawable/baseline_add"
+                                app:tint="@color/cash_obsidian"
+                                android:contentDescription="@string/app_name" />
+
+                        </LinearLayout>
+
+                        <TextView
+                            android:id="@+id/tvSubtotal5"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:text="₹0"
+                            android:textColor="@color/cash_text_muted"
+                            android:textSize="14.5sp"
+                            android:textStyle="bold"
+                            android:fontFamily="@font/jetbrains_mono"
+                            android:gravity="end"
+                            android:layout_marginStart="8dp"
+                            app:layout_constraintStart_toEndOf="@id/ctrlGroup5"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintBottom_toBottomOf="parent" />
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                    <View android:id="@+id/div5" android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/cash_line" android:layout_marginHorizontal="12dp" />
+
+                    <!-- Row: 2 (Coin) -->
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/row2"
+                        android:layout_width="match_parent"
+                        android:layout_height="52dp"
+                        android:paddingHorizontal="12dp">
+
+                        <FrameLayout
+                            android:id="@+id/chipFrame2"
+                            android:layout_width="56dp"
+                            android:layout_height="34dp"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintBottom_toBottomOf="parent">
+
+                            <TextView
+                                android:id="@+id/chip2"
+                                android:layout_width="34dp"
+                                android:layout_height="34dp"
+                                android:layout_gravity="center"
+                                android:gravity="center"
+                                android:background="@drawable/bg_coin_2"
+                                android:text="₹2"
+                                android:textColor="@color/cash_coin_2_text"
+                                android:textSize="12.5sp"
+                                android:textStyle="bold" />
+
+                        </FrameLayout>
+
+                        <LinearLayout
+                            android:id="@+id/ctrlGroup2"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            android:layout_marginStart="12dp"
+                            app:layout_constraintStart_toEndOf="@id/chipFrame2"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintBottom_toBottomOf="parent">
+
+                            <ImageView
+                                android:id="@+id/btnMinus2"
+                                android:layout_width="36dp"
+                                android:layout_height="36dp"
+                                android:padding="9dp"
+                                android:background="@drawable/bg_round_step_btn"
+                                android:src="@drawable/baseline_remove"
+                                app:tint="@color/cash_obsidian"
+                                android:contentDescription="@string/app_name" />
+
+                            <TextView
+                                android:id="@+id/pillCount2"
+                                android:layout_width="wrap_content"
+                                android:minWidth="52dp"
+                                android:layout_height="38dp"
+                                android:layout_marginHorizontal="4dp"
+                                android:gravity="center"
+                                android:paddingHorizontal="4dp"
+                                android:text="0"
+                                android:textColor="@color/cash_text_muted"
+                                android:textSize="19sp"
+                                android:fontFamily="@font/jetbrains_mono" />
+
+                            <ImageView
+                                android:id="@+id/btnPlus2"
+                                android:layout_width="36dp"
+                                android:layout_height="36dp"
+                                android:padding="9dp"
+                                android:background="@drawable/bg_round_step_btn"
+                                android:src="@drawable/baseline_add"
+                                app:tint="@color/cash_obsidian"
+                                android:contentDescription="@string/app_name" />
+
+                        </LinearLayout>
+
+                        <TextView
+                            android:id="@+id/tvSubtotal2"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:text="₹0"
+                            android:textColor="@color/cash_text_muted"
+                            android:textSize="14.5sp"
+                            android:textStyle="bold"
+                            android:fontFamily="@font/jetbrains_mono"
+                            android:gravity="end"
+                            android:layout_marginStart="8dp"
+                            app:layout_constraintStart_toEndOf="@id/ctrlGroup2"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintBottom_toBottomOf="parent" />
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                    <View android:id="@+id/div2" android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/cash_line" android:layout_marginHorizontal="12dp" />
+
+                    <!-- Row: 1 (Coin) -->
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/row1"
+                        android:layout_width="match_parent"
+                        android:layout_height="52dp"
+                        android:paddingHorizontal="12dp">
+
+                        <FrameLayout
+                            android:id="@+id/chipFrame1"
+                            android:layout_width="56dp"
+                            android:layout_height="34dp"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintBottom_toBottomOf="parent">
+
+                            <TextView
+                                android:id="@+id/chip1"
+                                android:layout_width="34dp"
+                                android:layout_height="34dp"
+                                android:layout_gravity="center"
+                                android:gravity="center"
+                                android:background="@drawable/bg_coin_1"
+                                android:text="₹1"
+                                android:textColor="@color/cash_coin_1_text"
+                                android:textSize="12.5sp"
+                                android:textStyle="bold" />
+
+                        </FrameLayout>
+
+                        <LinearLayout
+                            android:id="@+id/ctrlGroup1"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            android:layout_marginStart="12dp"
+                            app:layout_constraintStart_toEndOf="@id/chipFrame1"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintBottom_toBottomOf="parent">
+
+                            <ImageView
+                                android:id="@+id/btnMinus1"
+                                android:layout_width="36dp"
+                                android:layout_height="36dp"
+                                android:padding="9dp"
+                                android:background="@drawable/bg_round_step_btn"
+                                android:src="@drawable/baseline_remove"
+                                app:tint="@color/cash_obsidian"
+                                android:contentDescription="@string/app_name" />
+
+                            <TextView
+                                android:id="@+id/pillCount1"
+                                android:layout_width="wrap_content"
+                                android:minWidth="52dp"
+                                android:layout_height="38dp"
+                                android:layout_marginHorizontal="4dp"
+                                android:gravity="center"
+                                android:paddingHorizontal="4dp"
+                                android:text="0"
+                                android:textColor="@color/cash_text_muted"
+                                android:textSize="19sp"
+                                android:fontFamily="@font/jetbrains_mono" />
+
+                            <ImageView
+                                android:id="@+id/btnPlus1"
+                                android:layout_width="36dp"
+                                android:layout_height="36dp"
+                                android:padding="9dp"
+                                android:background="@drawable/bg_round_step_btn"
+                                android:src="@drawable/baseline_add"
+                                app:tint="@color/cash_obsidian"
+                                android:contentDescription="@string/app_name" />
+
+                        </LinearLayout>
+
+                        <TextView
+                            android:id="@+id/tvSubtotal1"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:text="₹0"
+                            android:textColor="@color/cash_text_muted"
+                            android:textSize="14.5sp"
+                            android:textStyle="bold"
+                            android:fontFamily="@font/jetbrains_mono"
+                            android:gravity="end"
+                            android:layout_marginStart="8dp"
+                            app:layout_constraintStart_toEndOf="@id/ctrlGroup1"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintBottom_toBottomOf="parent" />
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </androidx.core.widget.NestedScrollView>
+
+        <!-- ==================== IN-APP KEYPAD SHEET ==================== -->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/keypadLayout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_keypad_sheet"
+            android:paddingHorizontal="12dp"
+            android:paddingTop="4dp"
+            android:paddingBottom="16dp"
+            android:elevation="12dp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <!-- Sheet Header: hidden but kept for Kotlin binding references -->
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/keypadHeader"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:visibility="gone"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
+
+                <FrameLayout
+                    android:id="@+id/flSheetChip"
+                    android:layout_width="56dp"
+                    android:layout_height="32dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent">
+
+                    <TextView
+                        android:id="@+id/tvActiveChip"
+                        android:layout_width="56dp"
+                        android:layout_height="28dp"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:includeFontPadding="false"
+                        android:background="@drawable/bg_note_500"
+                        android:text="₹500"
+                        android:textColor="@color/cash_note_500_text"
+                        android:textSize="12sp"
+                        android:textStyle="bold" />
+
+                </FrameLayout>
+
+                <TextView
+                    android:id="@+id/tvKeypadHint"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/keypad_hint_type"
+                    android:textColor="@color/cash_text_slate"
+                    android:textSize="14sp"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginEnd="8dp"
+                    android:maxLines="1"
+                    android:ellipsize="end"
+                    app:layout_constraintStart_toEndOf="@id/flSheetChip"
+                    app:layout_constraintEnd_toStartOf="@id/btnKeypadDone"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent" />
+
+                <TextView
+                    android:id="@+id/btnKeypadDone"
+                    android:layout_width="wrap_content"
+                    android:layout_height="36dp"
+                    android:background="@drawable/bg_keypad_done_pill"
+                    android:text="@string/keypad_done"
+                    android:textColor="#FFFFFF"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:gravity="center"
+                    android:paddingHorizontal="16dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+            <!-- 3x4 Keys Grid -->
+
+            <!-- Row 1: 1, 2, 3 -->
+            <TextView
+                android:id="@+id/btnKey1"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:background="@drawable/bg_keypad_btn"
+                android:text="1"
+                android:textColor="@color/cash_obsidian"
+                android:textSize="22sp"
+                android:gravity="center"
+                android:layout_marginEnd="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/btnKey2"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toTopOf="@id/btnKey4" />
+
+            <TextView
+                android:id="@+id/btnKey2"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:background="@drawable/bg_keypad_btn"
+                android:text="2"
+                android:textColor="@color/cash_obsidian"
+                android:textSize="22sp"
+                android:gravity="center"
+                android:layout_marginEnd="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                app:layout_constraintStart_toEndOf="@id/btnKey1"
+                app:layout_constraintEnd_toStartOf="@id/btnKey3"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toTopOf="@id/btnKey5" />
+
+            <TextView
+                android:id="@+id/btnKey3"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:background="@drawable/bg_keypad_btn"
+                android:text="3"
+                android:textColor="@color/cash_obsidian"
+                android:textSize="22sp"
+                android:gravity="center"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                app:layout_constraintStart_toEndOf="@id/btnKey2"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toTopOf="@id/btnKey6" />
+
+            <!-- Row 2: 4, 5, 6 -->
+            <TextView
+                android:id="@+id/btnKey4"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:background="@drawable/bg_keypad_btn"
+                android:text="4"
+                android:textColor="@color/cash_obsidian"
+                android:textSize="22sp"
+                android:gravity="center"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="8dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/btnKey5"
+                app:layout_constraintTop_toBottomOf="@id/btnKey1"
+                app:layout_constraintBottom_toTopOf="@id/btnKey7" />
+
+            <TextView
+                android:id="@+id/btnKey5"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:background="@drawable/bg_keypad_btn"
+                android:text="5"
+                android:textColor="@color/cash_obsidian"
+                android:textSize="22sp"
+                android:gravity="center"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="8dp"
+                app:layout_constraintStart_toEndOf="@id/btnKey4"
+                app:layout_constraintEnd_toStartOf="@id/btnKey6"
+                app:layout_constraintTop_toBottomOf="@id/btnKey2"
+                app:layout_constraintBottom_toTopOf="@id/btnKey8" />
+
+            <TextView
+                android:id="@+id/btnKey6"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:background="@drawable/bg_keypad_btn"
+                android:text="6"
+                android:textColor="@color/cash_obsidian"
+                android:textSize="22sp"
+                android:gravity="center"
+                android:layout_marginBottom="8dp"
+                app:layout_constraintStart_toEndOf="@id/btnKey5"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/btnKey3"
+                app:layout_constraintBottom_toTopOf="@id/btnKey9" />
+
+            <!-- Row 3: 7, 8, 9 -->
+            <TextView
+                android:id="@+id/btnKey7"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:background="@drawable/bg_keypad_btn"
+                android:text="7"
+                android:textColor="@color/cash_obsidian"
+                android:textSize="22sp"
+                android:gravity="center"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="8dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/btnKey8"
+                app:layout_constraintTop_toBottomOf="@id/btnKey4"
+                app:layout_constraintBottom_toTopOf="@id/btnKeyBackspace" />
+
+            <TextView
+                android:id="@+id/btnKey8"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:background="@drawable/bg_keypad_btn"
+                android:text="8"
+                android:textColor="@color/cash_obsidian"
+                android:textSize="22sp"
+                android:gravity="center"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="8dp"
+                app:layout_constraintStart_toEndOf="@id/btnKey7"
+                app:layout_constraintEnd_toStartOf="@id/btnKey9"
+                app:layout_constraintTop_toBottomOf="@id/btnKey5"
+                app:layout_constraintBottom_toTopOf="@id/btnKey0" />
+
+            <TextView
+                android:id="@+id/btnKey9"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:background="@drawable/bg_keypad_btn"
+                android:text="9"
+                android:textColor="@color/cash_obsidian"
+                android:textSize="22sp"
+                android:gravity="center"
+                android:layout_marginBottom="8dp"
+                app:layout_constraintStart_toEndOf="@id/btnKey8"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/btnKey6"
+                app:layout_constraintBottom_toTopOf="@id/btnKeyNext" />
+
+            <!-- Row 4: Backspace, 0, Next -->
+            <FrameLayout
+                android:id="@+id/btnKeyBackspace"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:background="@drawable/bg_keypad_btn"
+                android:layout_marginEnd="8dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/btnKey0"
+                app:layout_constraintTop_toBottomOf="@id/btnKey7"
+                app:layout_constraintBottom_toBottomOf="parent">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/baseline_backspace"
+                    app:tint="@color/cash_obsidian"
+                    android:contentDescription="@string/app_name" />
+
+            </FrameLayout>
+
+            <TextView
+                android:id="@+id/btnKey0"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:background="@drawable/bg_keypad_btn"
+                android:text="0"
+                android:textColor="@color/cash_obsidian"
+                android:textSize="22sp"
+                android:gravity="center"
+                android:layout_marginEnd="8dp"
+                app:layout_constraintStart_toEndOf="@id/btnKeyBackspace"
+                app:layout_constraintEnd_toStartOf="@id/btnKeyNext"
+                app:layout_constraintTop_toBottomOf="@id/btnKey8"
+                app:layout_constraintBottom_toBottomOf="parent" />
+
+            <LinearLayout
+                android:id="@+id/btnKeyNext"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:background="@drawable/bg_keypad_btn_next"
+                android:gravity="center"
+                android:orientation="horizontal"
+                app:layout_constraintStart_toEndOf="@id/btnKey0"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/btnKey9"
+                app:layout_constraintBottom_toBottomOf="parent">
+
+                <TextView
+                    android:id="@+id/tvNextLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/keypad_done"
+                    android:textColor="@color/cash_on_mint"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
+
+                <ImageView
+                    android:id="@+id/ivNextIcon"
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:layout_marginStart="4dp"
+                    android:src="@drawable/baseline_check"
+                    app:tint="@color/cash_on_mint"
+                    android:contentDescription="@string/keypad_done" />
+
+            </LinearLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</com.kal.cashcounter.SwipeDismissLayout>

@@ -1,0 +1,18 @@
+# Android Studio and Gradle
+/.idea/
+/.gradle/
+/local.properties
+/.kotlin/
+/app/build/
+/app/release/
+*.apk
+*.aab
+
+# Personal Research and Work-in-Progress Assets
+/claude ui/
+/KAL-backups/
+/user req feature/
+/docs/
+/.gemini/
+/artifact.html
+/SCREENSHOT/

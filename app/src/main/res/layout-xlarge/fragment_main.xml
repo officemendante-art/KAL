@@ -1,0 +1,369 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?attr/colorSurface"
+    android:importantForAccessibility="noHideDescendants"
+    tools:context=".fragments.MainFragment"
+    tools:ignore="RtlHardcoded">
+
+    <View
+        android:id="@+id/background_expression"
+        android:background="@drawable/background_expression"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/pagerGuideline"/>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/appBarConstraintLayout"
+        style="@style/AppBarConstraintLayoutCalculator"
+        app:layout_constraintTop_toTopOf="@id/background_expression"
+        app:layout_constraintLeft_toLeftOf="@id/background_expression"
+        app:layout_constraintRight_toRightOf="@id/background_expression">
+
+        <TextView
+            android:id="@+id/degreeTitleText"
+            style="@style/DegreeTitleText"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"/>
+
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/tabLayout"
+            style="@style/NavigationTabs"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar"
+            style="@style/Toolbar"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <TextView
+        android:id="@+id/resultText"
+        style="@style/Expression.Result"
+        app:layout_constraintBottom_toTopOf="@+id/layoutWordStrip"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/topResultGuideline" />
+
+    <!-- Full-Width "In Words" Strip (Seamless edge-to-edge, slideable, dynamic edge fading) -->
+    <FrameLayout
+        android:id="@+id/layoutWordStrip"
+        android:layout_width="0dp"
+        android:layout_height="28dp"
+        android:layout_marginBottom="4dp"
+        android:background="@android:color/transparent"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@id/pagerGuideline"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <HorizontalScrollView
+            android:id="@+id/scrollInWords"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scrollbars="none"
+            android:overScrollMode="never"
+            android:fillViewport="true">
+
+            <LinearLayout
+                android:id="@+id/layoutInWordsContent"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp">
+
+                <ImageView
+                    android:id="@+id/ivWordStripExpand"
+                    android:layout_width="13dp"
+                    android:layout_height="13dp"
+                    android:src="@drawable/baseline_open_in_full"
+                    app:tint="#526070"
+                    android:contentDescription="@null" />
+
+                <TextView
+                    android:id="@+id/tvWordStripText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="7dp"
+                    android:singleLine="true"
+                    android:ellipsize="none"
+                    android:textColor="#526070"
+                    android:textSize="11.5sp"
+                    android:fontFamily="sans-serif-medium" />
+
+            </LinearLayout>
+
+        </HorizontalScrollView>
+
+        <!-- Left Dynamic Gradient Fade Mask -->
+        <View
+            android:id="@+id/fadeMaskLeft"
+            android:layout_width="28dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="start"
+            android:background="@drawable/fade_mask_left"
+            android:clickable="false"
+            android:focusable="false"
+            android:importantForAccessibility="no" />
+
+        <!-- Right Dynamic Gradient Fade Mask -->
+        <View
+            android:id="@+id/fadeMaskRight"
+            android:layout_width="28dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="end"
+            android:background="@drawable/fade_mask_right"
+            android:clickable="false"
+            android:focusable="false"
+            android:importantForAccessibility="no" />
+
+    </FrameLayout>
+
+    <com.kal.expression.ExpressionEditText
+        android:id="@+id/expressionEditText"
+        style="@style/Expression"
+        app:layout_constraintBottom_toTopOf="@+id/resultText"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/appBarConstraintLayout" />
+
+    <TextView
+        android:id="@+id/expressionTextView"
+        style="@style/Expression"
+        android:visibility="invisible"
+        android:maxLines="1"
+        app:layout_constraintBottom_toTopOf="@+id/resultText"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/appBarConstraintLayout" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/topResultGuideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.225"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/pagerGuideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.345" />
+
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/pager"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:overScrollMode="never"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/pagerGuideline"/>
+
+    <!-- Dim Backdrop Overlay -->
+    <View
+        android:id="@+id/backdropWordsOverlay"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="#38000000"
+        android:visibility="gone"
+        android:clickable="true"
+        android:focusable="true"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- Spelled-out Words Pop-up Bottom Sheet -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/bottomSheetWords"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_words_bottom_sheet"
+        android:elevation="16dp"
+        android:paddingTop="12dp"
+        android:paddingBottom="20dp"
+        android:paddingHorizontal="24dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <!-- Touch-Friendly Drag Handle Lever Container -->
+        <FrameLayout
+            android:id="@+id/layoutDragHandleArea"
+            android:layout_width="0dp"
+            android:layout_height="32dp"
+            android:clickable="true"
+            android:focusable="true"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <!-- Centered Drag Handle Pill -->
+            <View
+                android:id="@+id/dragHandle"
+                android:layout_width="36dp"
+                android:layout_height="4dp"
+                android:layout_gravity="center"
+                android:background="@drawable/bg_drag_handle" />
+
+        </FrameLayout>
+
+        <!-- Header Row: IN WORDS label and Matrix Copy Button -->
+        <TextView
+            android:id="@+id/tvInWordsLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="IN WORDS"
+            android:textColor="#7B8896"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:letterSpacing="0.08"
+            app:layout_constraintTop_toBottomOf="@id/layoutDragHandleArea"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="@id/btnMatrixCopy" />
+
+        <FrameLayout
+            android:id="@+id/btnMatrixFont"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:background="@drawable/bg_matrix_font_step"
+            android:clickable="true"
+            android:focusable="true"
+            android:layout_marginTop="4dp"
+            android:layout_marginEnd="8dp"
+            app:layout_constraintTop_toBottomOf="@id/layoutDragHandleArea"
+            app:layout_constraintEnd_toStartOf="@id/btnMatrixCopy">
+
+            <ImageView
+                android:id="@+id/ivMatrixFontIcon"
+                android:layout_width="13dp"
+                android:layout_height="13dp"
+                android:layout_gravity="center"
+                android:src="@drawable/baseline_open_in_full"
+                app:tint="#0D6E43"
+                android:contentDescription="@string/words_font_size" />
+
+        </FrameLayout>
+
+        <LinearLayout
+            android:id="@+id/btnMatrixCopy"
+            android:layout_width="wrap_content"
+            android:layout_height="28dp"
+            android:minWidth="72dp"
+            android:background="@drawable/bg_matrix_copy_idle"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:paddingHorizontal="10dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:layout_marginTop="4dp"
+            app:layout_constraintTop_toBottomOf="@id/layoutDragHandleArea"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <ImageView
+                android:id="@+id/ivMatrixCopyIcon"
+                android:layout_width="13dp"
+                android:layout_height="13dp"
+                android:src="@drawable/baseline_content_copy"
+                app:tint="#0D6E43"
+                android:contentDescription="@null" />
+
+            <TextView
+                android:id="@+id/tvMatrixCopyText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:text="Copy"
+                android:textColor="#0D6E43"
+                android:textSize="11sp"
+                android:textStyle="bold"
+                android:fontFamily="monospace" />
+
+        </LinearLayout>
+
+        <!-- Body Area: Scrollable Words Typography -->
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/scrollWordsBody"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginTop="14dp"
+            android:fillViewport="true"
+            android:scrollbars="none"
+            android:overScrollMode="never"
+            app:layout_constraintTop_toBottomOf="@id/btnMatrixCopy"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <TextView
+                android:id="@+id/tvExpandedWords"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="#191C20"
+                android:textSize="24sp"
+                android:fontFamily="@font/inter_semibold"
+                android:lineSpacingMultiplier="1.42"
+                android:lineSpacingExtra="2dp"
+                android:letterSpacing="0.02" />
+
+        </androidx.core.widget.NestedScrollView>
+
+        <!-- First-Time User Experience (FTUE) Gesture Tooltip Bubble -->
+        <LinearLayout
+            android:id="@+id/layoutGestureTooltip"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_tooltip_bubble"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingHorizontal="10dp"
+            android:paddingVertical="6dp"
+            android:elevation="20dp"
+            android:visibility="gone"
+            android:layout_marginTop="6dp"
+            app:layout_constraintTop_toBottomOf="@id/btnMatrixFont"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <ImageView
+                android:id="@+id/ivGestureTooltipIcon"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:src="@drawable/ic_pinch_gesture"
+                app:tint="#00F59B"
+                android:contentDescription="@null" />
+
+            <TextView
+                android:id="@+id/tvGestureTooltipText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="6dp"
+                android:text="@string/words_font_tooltip_hint"
+                android:textColor="#F8F9FA"
+                android:textSize="11sp"
+                android:fontFamily="sans-serif-medium" />
+
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
